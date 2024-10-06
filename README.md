@@ -1,4 +1,4 @@
-# Hawkeye
+<!-- # Hawkeye
 
 ## Official code of our MM 2024 Oral paper: Hawkeye: Discovering and Grounding Implicit Anomalous Sentiment in Recon-videos via Scene-enhanced Video Large Language Model
 
@@ -6,4 +6,6 @@
 
 ### Open-Source Checklist
 - [ ] Dataset
-- [ ] Code
+- [ ] Code -->
+<h2 align="center"> <a href="https://openreview.net/pdf?id=ys3V4jiENk">Hawkeye: Discovering and Grounding Implicit Anomalous Sentiment in Recon-videos via Scene-enhanced Video Large Language Model</a></h2>
+<h5 align="center"> If you like our project, please give us a star ⭐ on GitHub for latest update.  </h2>
