@@ -45,7 +45,7 @@ def find_all_linear_names(model):
 def main():
     disable_torch_init()
 
-    model_path = 'output_folder/video-llava-lora-all'
+    model_path = 'output_folder/Hawkeye'
     # model_path = 'LanguageBind/video-llava-7b'
     model_base = 'lmsys/vicuna-7b-v1.5'
     # model_base = None

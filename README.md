@@ -58,5 +58,61 @@ You can set up the environments by using `conda env create -f environment.yml`.
 ```
 
 ### Model checkpoint preparation
-1. Download the pretrained vicuna-v1.5 model from [Haggingface](https://huggingface.co/xxx/vicuna-v1.5) and place it in the `lmsys` folder.\
+1. Download the pretrained vicuna-v1.5 model from [Haggingface](https://huggingface.co/xxx/vicuna-v1.5) and place it in the `lmsys` folder.
 2. Download the pretrained LanguageBind model from [LanguageBind](https://huggingface.co/LanguageBind) and place it in the `LanguageBind` folder.
+
+### Training
+```commandline
+$ bash scripts/v1_5/finetune_lora_a100.sh
+```
+After training, the checkpoint will be saved in the `output_folder` folder.
+
+
+## Model Zoo
+<table>
+    <tr>
+        <td>Metric</td>
+        <td>FNRs</td>
+        <td>F2</td>
+        <td>mAP@ 0.1</td>
+        <td>mAP@ 0.2</td>
+        <td>mAP@ 0.3</td>
+        <td>Url</td>
+    </tr>
+    <tr>
+        <td>On TSL Dataset</td>
+        <td>35.82</td>
+        <td>38.09</td>
+        <td>35.24</td>
+        <td>21.21</td>
+        <td>14.71</td>
+        <td><a href="https://drive.google.com/drive/folders/1_BSovDpZa7F73vnU9uNxu9etQasJb2ri?usp=sharing">Google drive</a></td>
+    </tr>
+    <tr>
+        <td rowspan="2">On UCF-Crime Dataset</td>
+        <td rowspan="2">45.66</td>
+        <td rowspan="2">45.03</td>
+        <td rowspan="2">34.41</td>
+        <td rowspan="2">19.22</td>
+        <td rowspan="2">12.1</td>
+        <td rowspan="2"><a href="https://drive.google.com/drive/folders/1_BSovDpZa7F73vnU9uNxu9etQasJb2ri?usp=sharing">Google drive</a></td>
+    </tr>
+</table>
+
+
+## Evaluation
+You can evaluate the model by running the command below.
+```commandline
+python3 demo.py
+```
+
+## Citation
+If you find this work useful, please consider citing it.
+```bibtex
+@inproceedings{Hawkeye,
+  title={Hawkeye: Discovering and Grounding Implicit Anomalous Sentiment in Recon-videos via Scene-enhanced Video Large Language Model},
+  author={Jianing Zhao, Jingjing Wang, Yujie Jin, Jiamin Luo and Guodong Zhou},
+  booktitle={Proceedings of ACM MM 2024},
+  year={2024}
+}
+```
