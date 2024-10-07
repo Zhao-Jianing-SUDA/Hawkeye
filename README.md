@@ -12,3 +12,51 @@ In real-world recon-videos such as surveillance and drone reconnaissance videos,
 ## Dependencies
 
 You can set up the environments by using `conda env create -f environment.yml`.
+
+## Training Pipeline
+
+### Dataset Preparation
+
+1. Prepare [TSL-300](https://github.com/nku-zhichengzhang/TSL300) dataset.
+
+2. Prepare [UCF-Crime](https://github.com/WaqasSultani/AnomalyDetectionCVPR2018) dataset.
+
+3. Split the videos into frames, extract action features and object-relation features with [HigherHRNet](https://github.com/HRNet/HigherHRNet-Human-Pose-Estimation) and [RelTR](https://github.com/yrcong/RelTR).
+4. Place the features inside the `dataset` folder.
+   
+    - Please ensure the data structure is as below.
+
+```
+├── dataset
+   └── vid_split
+       ├── 1_Ekman6_disgust_3
+           ├── 1.mp4
+           ├── 2.mp4
+           └── ...
+       ├── Abuse028_x264
+           ├── 1.mp4
+           ├── 2.mp4
+           └── ...
+   └── pose_feat
+       ├── 1_Ekman6_disgust_3
+           ├── frame_1.npy
+           ├── frame_2.npy
+           └── ...
+       ├── Abuse028_x264
+           ├── frame_1.npy
+           ├── frame_2.npy
+           └── ...
+   └── rel_feat
+         ├── 1_Ekman6_disgust_3
+              ├── frame_1.npy
+              ├── frame_2.npy
+              └── ...
+         ├── Abuse028_x264
+              ├── frame_1.npy
+              ├── frame_2.npy
+              └── ...
+```
+
+### Model checkpoint preparation
+1. Download the pretrained vicuna-v1.5 model from [Haggingface](https://huggingface.co/xxx/vicuna-v1.5) and place it in the `lmsys` folder.\
+2. Download the pretrained LanguageBind model from [LanguageBind](https://huggingface.co/LanguageBind) and place it in the `LanguageBind` folder.
