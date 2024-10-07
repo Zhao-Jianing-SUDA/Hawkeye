@@ -824,7 +824,6 @@ class LazySupervisedDataset(Dataset):
             else:
                 sources_ = copy.deepcopy([e["conversations"] for e in sources])
 
-            # print(copy.deepcopy([e["conversations"] for e in sources]))
             data_dict = preprocess(
                 sources_,
                 self.tokenizer,
@@ -935,7 +934,6 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer,
 
 
 def train():
-    print('运行的是zimulu的trian_mem')
     global local_rank
     parser = transformers.HfArgumentParser(
         (ModelArguments, DataArguments, TrainingArguments))
