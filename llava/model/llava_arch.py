@@ -117,7 +117,6 @@ class GTN(nn.Module):
             channels = hidden_channels
 
         self.linear = nn.Linear(hidden_channels, out_channels)
-        # self.linear = nn.Linear(353, 4096)
         self.linear.requires_grad_(True)
 
         for p in self.conv_layers.parameters():
@@ -137,11 +136,9 @@ class GTN(nn.Module):
             if sub not in nodes:
                 nodes.append(sub)
                 node_features.append(probas_sub[i])
-                # node_features.append(video_feat[0])
             if obj not in nodes:
                 nodes.append(obj)
                 node_features.append(probas_obj[i])
-                # node_features.append(video_feat[0])
             edges.append((sub, obj))
         edge_index = torch.tensor([[nodes.index(src), nodes.index(dst)] for src, dst in edges],
                                   dtype=torch.long).t().contiguous()
@@ -453,16 +450,9 @@ class MOE(nn.Module):
             param.requires_grad = True
 
     def forward(self, pose_feat, scene_feat):
-        # print(pose_feat.shape,scene_feat.shape)#torch.Size([1, 5, 4096]) torch.Size([1, 3, 4096])
         image_feats = torch.cat((pose_feat, scene_feat), dim=1)
-        # print('image_feats:')
-        # print(image_feats)
-        # print(image_feats.shape)
         routing_weights = self.routers['pose'](image_feats).sigmoid()
         routing_weights = routing_weights / routing_weights.sum(dim=-1, keepdim=True)
-        # print('routing_weights:')
-        # print(routing_weights)
-        # print(routing_weights.shape)
         image_feats_experts = []
 
         for expert_id in range(self.num_experts):
@@ -474,8 +464,6 @@ class MOE(nn.Module):
                 1), expert_id]
             # [B, L, D] * [B, L, 1]
             image_feats_expert = image_feats_expert * routing_weight[:, :, None]
-            # print(expert_id)
-            # print(routing_weight)
             image_feats_experts.append(image_feats_expert)
         image_feats = sum(image_feats_experts)
         image_feats = self.clip_proj2['pose'](image_feats)
@@ -669,15 +657,12 @@ class LlavaMetaForCausalLM(ABC):
         return tower
 
     def encode_images(self, images):
-        print(self.get_model().get_image_tower(),'777777777777777')
         image_features = self.get_model().get_image_tower()(images)
         image_features = self.get_model().mm_projector(image_features)
         return image_features
 
     def encode_videos(self, videos):
-        # print(videos.shape)
         video_features = self.get_model().get_video_tower()(videos)
-        # print(video_features.shape)
         video_features = self.get_model().mm_projector(video_features)
         return video_features
 
@@ -728,33 +713,22 @@ class LlavaMetaForCausalLM(ABC):
 
         X_features = []
 
-        #print(X_features_video[0].shape)
         for i in range(len(X_features_video)):
 
             if poses[i] != None:
                 X_features_pose = getattr(self, 'encode_poses')(poses[i])
                 X_features_scene = getattr(self, 'encode_scenes')(scenes[i])
-                # print(X_features_pose.shape,X_features_scene.shape)
                 X_moe_feat = getattr(self, 'moe_route')(X_features_pose, X_features_scene)
 
                 X_features.append(torch.cat((X_features_video[i], X_moe_feat), dim=0))
-                # X_features.append(torch.cat((X_features_video[i], X_features_pose), dim=0))
-                # X_features.append(X_features_video[i])
             else:
-                # X_moe_feat = torch.zeros(10, 4096).cuda()
                 X_features.append(X_features_video[i])
-        # X_features = [torch.cat((X_features_video[i], X_features_scene[i]), dim=0) for i in range(len(X_features_video))]
-        # X_features = [getattr(self, f'encode_{key}s')(X.unsqueeze(0)) for X, key in zip(Xs, keys)]
-        # X_features = [x.flatten(0, 1) for x in X_features]
-        # for i in X_features:
-        #     print(i.shape)
-        # print(torch.any(torch.stack([input_ids[0] == X_TOKEN_INDEX[key.upper()] for key in keys]), dim=0))
+
         new_input_embeds = []
         new_labels = [] if labels is not None else None
         cur_X_idx = 0
 
         for batch_idx, cur_input_ids in enumerate(input_ids):
-            # print(333333)
             if (
             torch.any(torch.stack([cur_input_ids == X_TOKEN_INDEX[key.upper()] for key in keys]), dim=0)).sum() == 0:
                 # multimodal LLM, but the current sample is not multimodal
@@ -773,19 +747,14 @@ class LlavaMetaForCausalLM(ABC):
             torch.where(torch.any(torch.stack([cur_input_ids == X_TOKEN_INDEX[key.upper()] for key in keys]), dim=0))[0]
             cur_new_input_embeds = []
             if labels is not None:
-                # print(labels, batch_idx)
                 cur_labels = labels[batch_idx]
                 cur_new_labels = []
                 assert cur_labels.shape == cur_input_ids.shape
-            # print(4444444444)
-            # print(cur_labels)
-            # print(cur_input_ids)
-            # print(X_token_indices)
             while X_token_indices.numel() > 0:
                 cur_X_features = X_features[cur_X_idx]
                 X_token_start = X_token_indices[0]
                 if getattr(self.config, 'tune_mm_mlp_adapter', False) and getattr(self.config, 'mm_use_x_start_end',
-                                                                                  False):  # 不走这
+                                                                                  False):
                     cur_new_input_embeds.append(
                         self.get_model().embed_tokens(cur_input_ids[:X_token_start - 1]).detach())
                     cur_new_input_embeds.append(
@@ -801,28 +770,23 @@ class LlavaMetaForCausalLM(ABC):
                         cur_labels = cur_labels[X_token_start + 2:]
                 else:
                     cur_new_input_embeds.append(
-                        self.get_model().embed_tokens(cur_input_ids[:X_token_start]))  # imgtoken之前的text拿出来，好像都是模板套话
+                        self.get_model().embed_tokens(cur_input_ids[:X_token_start]))
                     cur_new_input_embeds.append(cur_X_features)
                     if labels is not None:
                         cur_new_labels.append(cur_labels[:X_token_start])
-                        # print(cur_new_labels)
-                        # print(cur_X_features.shape[0])
-                        # cur_new_labels.append(torch.full((cur_X_features.shape[0],), vid_label[batch_idx], device=labels.device, dtype=labels.dtype))
                         cur_new_labels.append(torch.full((cur_X_features.shape[0],), IGNORE_INDEX, device=labels.device,
                                                          dtype=labels.dtype))
-                        # print(cur_new_labels)
+
                         cur_labels = cur_labels[X_token_start + 1:]
                 cur_X_idx += 1
                 if getattr(self.config, 'tune_mm_mlp_adapter', False) and getattr(self.config, 'mm_use_x_start_end',
                                                                                   False):
                     cur_input_ids = cur_input_ids[X_token_start + 2:]
                 else:
-                    cur_input_ids = cur_input_ids[X_token_start + 1:]  # imgtoken之后的text拿出来，是真的question
-                    # print(cur_input_ids)
+                    cur_input_ids = cur_input_ids[X_token_start + 1:]
                 X_token_indices = torch.where(
                     torch.any(torch.stack([cur_input_ids == X_TOKEN_INDEX[key.upper()] for key in keys]), dim=0))[0]
 
-            # print(55555555555555555)
             if cur_input_ids.numel() > 0:
                 if getattr(self.config, 'tune_mm_mlp_adapter', False) and getattr(self.config, 'mm_use_x_start_end',
                                                                                   False):
@@ -831,7 +795,7 @@ class LlavaMetaForCausalLM(ABC):
                     cur_new_input_embeds.append(self.get_model().embed_tokens(cur_input_ids))
                 if labels is not None:
                     cur_new_labels.append(cur_labels)
-            cur_new_input_embeds = [x.to(device=self.device) for x in cur_new_input_embeds]  # 前面text+图片+后面question
+            cur_new_input_embeds = [x.to(device=self.device) for x in cur_new_input_embeds]
             cur_new_input_embeds = torch.cat(cur_new_input_embeds, dim=0)
             new_input_embeds.append(cur_new_input_embeds)
             if labels is not None:

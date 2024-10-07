@@ -35,8 +35,6 @@ class FocalLoss(nn.Module):
         self.reduction = reduction
 
     def forward(self, ce_loss):
-        # 计算交叉熵损失
-        # ce_loss = F.binary_cross_entropy_with_logits(logits, targets, reduction='none')
 
         # 计算正负样本权重
         p_t = torch.exp(-ce_loss)
@@ -103,20 +101,10 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
         )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        # print(222222222222222222222222222222222222222222222)
-        # print(labels)
-        # print(labels.shape)
-        # print('llava_llama for causal')
-        # print(images)
+
         input_ids, attention_mask, past_key_values, inputs_embeds, labels = self.prepare_inputs_labels_for_multimodal(
             input_ids, attention_mask, past_key_values, labels, images)
-        # input_ids已经没了，因为text已经融合到inputs_embeds里面：前text+img+后text，总共大几百个token
-        # 之后的input_ids是上一轮预测得token，图片和之前得文本信息融到past_key_values
-        # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
 
-        # print(66666666666666666666666)
-        # print(labels.tolist())
-        # print(labels.shape)
         outputs = self.model(
             input_ids=input_ids,
             attention_mask=attention_mask,
@@ -128,11 +116,9 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
             return_dict=return_dict
         )
 
-        # print(777777777)
         hidden_states = outputs[0]
         logits = self.lm_head(hidden_states)
 
-        # print(88888888888888)
         loss = None
         if labels is not None:
             # Shift so that tokens < n predict n
@@ -143,8 +129,6 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
             fc_loss = FocalLoss(alpha=0.25, gamma=2, reduction='mean')
             shift_logits = shift_logits.view(-1, self.config.vocab_size)
             shift_labels = shift_labels.view(-1)
-            # print(shift_labels.tolist())
-            # print(shift_labels.shape, shift_logits.shape)
             # Enable model/pipeline parallelism
             shift_labels = shift_labels.to(shift_logits.device)
             ce_loss = loss_fct(shift_logits, shift_labels)
@@ -153,7 +137,6 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
             output = (logits,) + outputs[1:]
             return (loss,) + output if loss is not None else output
 
-        # print(99999999999)
         return CausalLMOutputWithPast(
             loss=loss,
             logits=logits,
