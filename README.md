@@ -58,7 +58,7 @@ You can set up the environments by using `conda env create -f environment.yml`.
 ```
 
 ### Model checkpoint preparation
-1. Download the pretrained vicuna-v1.5 model from [Haggingface](https://huggingface.co/xxx/vicuna-v1.5) and place it in the `lmsys` folder.
+1. Download the pretrained vicuna-v1.5 model from [Haggingface](https://huggingface.co/lmsys/vicuna-7b-v1.5/tree/main) and place it in the `lmsys` folder.
 2. Download the pretrained LanguageBind model from [LanguageBind](https://huggingface.co/LanguageBind) and place it in the `LanguageBind` folder.
 
 ### Training
