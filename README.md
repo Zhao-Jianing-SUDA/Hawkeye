@@ -103,7 +103,7 @@ After training, the checkpoint will be saved in the `output_folder` folder.
 ## Evaluation
 You can evaluate the model by running the command below.
 ```commandline
-python3 demo.py
+python3 eval.py
 ```
 
 ## Citation
