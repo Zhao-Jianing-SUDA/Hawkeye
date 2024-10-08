@@ -1,4 +1,4 @@
-name: jxma
+name: Hawkeye
 channels:
   - http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch
   - http://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
@@ -287,4 +287,4 @@ dependencies:
       - yapf==0.40.2
       - yarl==1.9.4
       - zipp==3.18.1
-prefix: /public/home/djingwang/anaconda3/envs/jxma
+prefix: /public/home/jnzhao/anaconda3/envs/Hawkeye
