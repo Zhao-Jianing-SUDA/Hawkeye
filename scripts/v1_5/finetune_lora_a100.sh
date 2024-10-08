@@ -41,4 +41,4 @@ HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 deepspeed --master_port=29501 train
     --lazy_preprocess True \
     --report_to tensorboard \
     --cache_dir "./cache_dir" \
-    --output_dir "output_folder/video-llava-lora-scene"
+    --output_dir "output_folder/Hawkeye"
