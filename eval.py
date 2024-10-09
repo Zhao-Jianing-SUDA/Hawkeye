@@ -122,30 +122,20 @@ def main():
             stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
             keywords = [stop_str]
             stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
-            # print(tensor.shape)
-            try:
-                with torch.inference_mode():
-                    output_ids = model.generate(
-                        input_ids,
-                        images=[tensor, [tensor_pose], [tensor_scene], key],
-                        do_sample=True,
-                        temperature=0.1,
-                        max_new_tokens=16,
-                        use_cache=True,
-                        stopping_criteria=[stopping_criteria])
 
-                outputs = tokenizer.decode(output_ids[0, input_ids.shape[1]:]).strip()
-                # print(outputs)
-                res.append(outputs)
-            except Exception as e:
-                if len(res) > 0:
-                    res.append(res[-1])
-                else:
-                    if 'surprise' in video_id_folder_path.lower() or 'joy' in video_id_folder_path.lower():
-                        res.append('No.')
-                    else:
-                        res.append('negative')
-                print(video_id_folder, video)
+            with torch.inference_mode():
+                output_ids = model.generate(
+                    input_ids,
+                    images=[tensor, [tensor_pose], [tensor_scene], key],
+                    do_sample=True,
+                    temperature=0.1,
+                    max_new_tokens=16,
+                    use_cache=True,
+                    stopping_criteria=[stopping_criteria])
+
+            outputs = tokenizer.decode(output_ids[0, input_ids.shape[1]:]).strip()
+            # print(outputs)
+            res.append(outputs)
         df = pd.DataFrame({
             'file': name,
             'output': res
@@ -155,7 +145,6 @@ def main():
 
     for video_id_folder in tqdm(os.listdir('dataset/Ucf/Ucfcrime_split')):
         if 'Normal' not in video_id_folder:
-            print(video_id_folder)
             video_id_folder_path = os.path.join('dataset/Ucf/Ucfcrime_split', video_id_folder)
             video_list = []
             name = []
@@ -222,26 +211,20 @@ def main():
                 stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
                 keywords = [stop_str]
                 stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
-                try:
-                    with torch.inference_mode():
-                        output_ids = model.generate(
-                            input_ids,
-                            images=[tensor, [tensor_pose], [tensor_scene], key],
-                            do_sample=True,
-                            temperature=0.1,
-                            max_new_tokens=32,
-                            use_cache=True,
-                            stopping_criteria=[stopping_criteria])
 
-                    outputs = tokenizer.decode(output_ids[0, input_ids.shape[1]:]).strip()
-                    # print(outputs)
-                    res.append(outputs)
-                except Exception as e:
-                    print(video_id_folder, video)
-                    if len(res) > 0:
-                        res.append(res[-1])
-                    else:
-                        res.append('negative')
+                with torch.inference_mode():
+                    output_ids = model.generate(
+                        input_ids,
+                        images=[tensor, [tensor_pose], [tensor_scene], key],
+                        do_sample=True,
+                        temperature=0.1,
+                        max_new_tokens=32,
+                        use_cache=True,
+                        stopping_criteria=[stopping_criteria])
+
+                outputs = tokenizer.decode(output_ids[0, input_ids.shape[1]:]).strip()
+                # print(outputs)
+                res.append(outputs)
             df = pd.DataFrame({
                 'file': name,
                 'output': res
