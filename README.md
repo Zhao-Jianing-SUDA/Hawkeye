@@ -109,10 +109,10 @@ python3 eval.py
 ## Citation
 If you find this work useful, please consider citing it.
 ```bibtex
-@inproceedings{Hawkeye,
+@inproceedings{zhao2024hawkeye,
   title={Hawkeye: Discovering and Grounding Implicit Anomalous Sentiment in Recon-videos via Scene-enhanced Video Large Language Model},
-  author={Jianing Zhao, Jingjing Wang, Yujie Jin, Jiamin Luo and Guodong Zhou},
-  booktitle={Proceedings of ACM MM 2024},
+  author={Zhao, Jianing and Wang, Jingjing and Jin, Yujie and Luo, Jiamin and Zhou, Guodong},
+  booktitle={Proceedings of {ACM MM} 2024},
   year={2024}
 }
 ```
